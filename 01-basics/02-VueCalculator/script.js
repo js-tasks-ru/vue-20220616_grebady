@@ -6,7 +6,7 @@ const app = createApp({
     return {
       arg1: 0,
       arg2: 0,
-      operator: [],
+      operator: 'sum',
     };
   },
   computed: {
