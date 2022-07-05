@@ -13,6 +13,7 @@
     <div v-show="isOpened" class="dropdown__menu" role="listbox">
       <button
         v-for="option in options"
+        :key="option.value"
         class="dropdown__item"
         :class="{ dropdown__item_icon: isIconClass }"
         role="option"
@@ -32,6 +33,7 @@
 
 <script>
 import UiIcon from './UiIcon';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'UiDropdown',
@@ -76,6 +78,10 @@ export default {
     checkNewValue(event) {
       this.isOpened = false;
       this.$emit('update:modelValue', event.target.value);
+    },
+
+    createKey() {
+      return uuidv4();
     },
   },
 };
