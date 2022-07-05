@@ -1,6 +1,6 @@
 <template>
-  <div class="dropdown" :class="{ dropdown_opened: isOpened }" @click="isOpened = !isOpened">
-    <button type="button" class="dropdown__toggle" :class="{ dropdown__toggle_icon: isIconClass }" >
+  <div class="dropdown" :class="{ dropdown_opened: isOpened }">
+    <button type="button" class="dropdown__toggle" :class="{ dropdown__toggle_icon: isIconClass }" @click="isOpened = !isOpened">
       <ui-icon v-if="modelIcon" :icon="modelIcon" class="dropdown__icon" />
       <span>{{ modelText ?? title }}</span>
     </button>
