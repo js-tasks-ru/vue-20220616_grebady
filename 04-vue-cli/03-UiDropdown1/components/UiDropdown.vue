@@ -1,6 +1,11 @@
 <template>
   <div class="dropdown" :class="{ dropdown_opened: isOpened }">
-    <button type="button" class="dropdown__toggle" :class="{ dropdown__toggle_icon: isIconClass }" @click="isOpened = !isOpened">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="{ dropdown__toggle_icon: isIconClass }"
+      @click="isOpened = !isOpened"
+    >
       <ui-icon v-if="modelIcon" :icon="modelIcon" class="dropdown__icon" />
       <span>{{ modelText ?? title }}</span>
     </button>
@@ -19,6 +24,9 @@
         {{ option.text }}
       </button>
     </div>
+    <select hidden :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
+      <option v-for="option in options" :value="option.value">{{ option.text }}</option>
+    </select>
   </div>
 </template>
 
@@ -44,6 +52,8 @@ export default {
     },
   },
 
+  emits: ['update:modelValue'],
+
   data() {
     return {
       isOpened: false,
@@ -55,10 +65,10 @@ export default {
       return !!this.options.find((item) => item.icon);
     },
     modelIcon() {
-      return this.options.find(item => item.value === this.modelValue)?.icon;
+      return this.options.find((item) => item.value === this.modelValue)?.icon;
     },
     modelText() {
-      return this.options.find(item => item.value === this.modelValue)?.text;
+      return this.options.find((item) => item.value === this.modelValue)?.text;
     },
   },
 
