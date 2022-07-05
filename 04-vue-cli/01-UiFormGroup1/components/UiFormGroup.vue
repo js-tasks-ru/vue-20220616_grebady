@@ -1,12 +1,7 @@
 <template>
   <div :class="{ 'form-group_inline': inline }" class="form-group">
     <label v-if="label" class="form-group__label">{{ label }}</label>
-    <template v-if="inline">
-      <slot />
-    </template>
-    <UiContainer v-else>
-      <slot />
-    </UiContainer>
+    <slot />
   </div>
 </template>
 
