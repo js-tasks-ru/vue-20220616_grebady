@@ -1,30 +1,89 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <ui-icon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="{ dropdown_opened: isOpened }">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="{ dropdown__toggle_icon: isIconClass }"
+      @click="isOpened = !isOpened"
+    >
+      <ui-icon v-if="modelIcon" :icon="modelIcon" class="dropdown__icon" />
+      <span>{{ modelText ?? title }}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <ui-icon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <ui-icon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div v-show="isOpened" class="dropdown__menu" role="listbox">
+      <button
+        v-for="option in options"
+        :key="option.value"
+        class="dropdown__item"
+        :class="{ dropdown__item_icon: isIconClass }"
+        role="option"
+        type="button"
+        :value="option.value"
+        @click="checkNewValue($event)"
+      >
+        <ui-icon v-if="option.icon" :icon="option.icon" class="dropdown__icon" />
+        {{ option.text }}
       </button>
     </div>
+    <select hidden :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
+      <option v-for="option in options" :value="option.value">{{ option.text }}</option>
+    </select>
   </div>
 </template>
 
 <script>
 import UiIcon from './UiIcon';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'UiDropdown',
 
   components: { UiIcon },
+
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    modelValue: {
+      type: String,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+  },
+
+  emits: ['update:modelValue'],
+
+  data() {
+    return {
+      isOpened: false,
+    };
+  },
+
+  computed: {
+    isIconClass() {
+      return !!this.options.find((item) => item.icon);
+    },
+    modelIcon() {
+      return this.options.find((item) => item.value === this.modelValue)?.icon;
+    },
+    modelText() {
+      return this.options.find((item) => item.value === this.modelValue)?.text;
+    },
+  },
+
+  methods: {
+    checkNewValue(event) {
+      this.isOpened = false;
+      this.$emit('update:modelValue', event.target.value);
+    },
+
+    createKey() {
+      return uuidv4();
+    },
+  },
 };
 </script>
 
@@ -61,7 +120,7 @@ export default {
   top: 15px;
   right: 16px;
   transform: none;
-  background: url('@/assets/icons/icon-chevron-down.svg') no-repeat;
+  background: url('../../../src/assets/icons/icon-chevron-down.svg') no-repeat;
   background-size: cover;
   display: block;
   width: 24px;
