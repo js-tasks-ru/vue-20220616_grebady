@@ -4,8 +4,8 @@
       v-for="toast in toasts"
       :key="toast.key"
       :icon="toast.icon"
-      :class="`toast_${toast.type}`"
       :message="toast.message"
+      :type="toast.type"
     />
   </div>
 </template>
