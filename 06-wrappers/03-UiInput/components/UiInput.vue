@@ -11,22 +11,15 @@
       <slot name="right-icon"></slot>
     </div>
 
-    <input
-      v-if="isInput"
+    <component
+      :is="isInput"
       ref="input"
-      v-model="modelProxy"
+      :value="modelValue"
       v-bind="$attrs"
       class="form-control"
       :class="{ 'form-control_sm': small, 'form-control_rounded': rounded }"
+      @[eventName]="handleEvent"
     />
-    <textarea
-      v-else
-      ref="input"
-      v-model="modelProxy"
-      v-bind="$attrs"
-      class="form-control"
-      :class="{ 'form-control_sm': small, 'form-control_rounded': rounded }"
-    ></textarea>
 
     <div v-if="$slots['left-icon']" class="input-group__icon">
       <slot name="left-icon"></slot>
@@ -52,6 +45,9 @@ export default {
     modelValue: {
       type: String,
     },
+    modelModifiers: {
+      default: () => ({}),
+    },
   },
 
   emits: {
@@ -60,21 +56,20 @@ export default {
 
   computed: {
     isInput() {
-      return !this.multiline;
+      return this.multiline ? 'textarea' : 'input';
     },
-    modelProxy: {
-      get() {
-        return this.modelValue;
-      },
-      set(value) {
-        this.$emit('update:modelValue', value);
-      },
+    eventName() {
+      return this.modelModifiers.lazy ? 'change' : 'input';
     },
   },
 
   methods: {
     focus() {
       this.$refs.input.focus();
+    },
+    handleEvent(event) {
+      const value = event.target.value;
+      this.$emit('update:modelValue', value);
     },
   },
 };
