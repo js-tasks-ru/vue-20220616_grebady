@@ -1,8 +1,21 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label
+      class="image-uploader__preview"
+      :class="{ 'image-uploader__preview-loading': status === 'loading' }"
+      :style="labelStyle"
+      @click="deletePreview"
+    >
+      <span class="image-uploader__text">{{ text }}</span>
+      <input
+        v-bind="$attrs"
+        ref="input"
+        type="file"
+        accept="image/*"
+        class="image-uploader__input"
+        @change="updateImage"
+        :disabled="status !== 'empty'"
+      />
     </label>
   </div>
 </template>
@@ -10,6 +23,85 @@
 <script>
 export default {
   name: 'UiImageUploader',
+
+  inheritAttrs: false,
+
+  props: {
+    preview: {
+      type: String,
+    },
+    uploader: {
+      type: Function,
+    },
+  },
+  emits: ['select', 'upload', 'error', 'remove'],
+
+  data() {
+    return {
+      isUploading: false, // В процессе загрузки на сервер
+      chosenImage: null, // Загруженная картинка с клиента
+      hasFiles: false, // имеет ли input файлы
+      remove: false, // если сработало событие remove - убираем preview
+    };
+  },
+
+  computed: {
+    status() {
+      if ((!this.preview || (this.preview && this.remove)) && !this.hasFiles) return 'empty'; //Пустой (preview отсутствует, изображение не выбрано).
+      if (this.hasFiles && this.isUploading) return 'loading'; // Загрузка (пользователь выбрал изображение и загружает его на сервер через uploader)
+      if ((this.preview && !this.remove) || (this.hasFiles && !this.isUploading)) return 'filled'; // Заполненный (выбран и загружен файл, либо изначально присутствует preview)
+      return 'error';
+    },
+    text() {
+      switch (this.status) {
+        case 'empty':
+          return 'Загрузить изображение';
+        case 'loading':
+          return 'Загрузка...';
+        case 'filled':
+          return 'Удалить изображение';
+        default:
+          return 'Ошибка';
+      }
+    },
+    labelStyle() {
+      if (this.chosenImage) return `--bg-url: url('${this.chosenImage}')`;
+      else if (this.preview && !this.remove) return `--bg-url: url('${this.preview}')`;
+      return null;
+    },
+  },
+
+  methods: {
+    async updateImage(event) {
+      this.hasFiles = !!this.$refs.input.files.length;
+      this.$emit('select', this.$refs.input.files[0]);
+      if (this.uploader) {
+        try {
+          this.isUploading = true;
+          const savedImageObj = await this.uploader(this.$refs.input.files[0]);
+          this.$emit('upload', savedImageObj);
+          this.chosenImage = savedImageObj.image;
+        } catch (e) {
+          this.$emit('error', e);
+          this.$refs.input.value = null;
+          this.hasFiles = false;
+        }
+        this.isUploading = false;
+      }
+    },
+    deletePreview(event) {
+      if (event.target.tagName === 'LABEL' || event.target.tagName === 'SPAN' ) {
+        if (this.status === 'filled') {
+          event.preventDefault();
+          this.chosenImage = null;
+          this.$refs.input.value = null;
+          this.hasFiles = false;
+          this.remove = true;
+          this.$emit('remove');
+        }
+      }
+    },
+  },
 };
 </script>
 
