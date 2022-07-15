@@ -13,8 +13,8 @@
         type="file"
         accept="image/*"
         class="image-uploader__input"
-        @change="updateImage"
         :disabled="status !== 'empty'"
+        @change="updateImage"
       />
     </label>
   </div>
@@ -39,18 +39,15 @@ export default {
   data() {
     return {
       isUploading: false, // В процессе загрузки на сервер
-      chosenImage: null, // Загруженная картинка с клиента
-      hasFiles: false, // имеет ли input файлы
-      remove: false, // если сработало событие remove - убираем preview
+      chosenImage: this.preview, // Загруженная картинка с клиента
     };
   },
 
   computed: {
     status() {
-      if ((!this.preview || (this.preview && this.remove)) && !this.hasFiles) return 'empty'; //Пустой (preview отсутствует, изображение не выбрано).
-      if (this.hasFiles && this.isUploading) return 'loading'; // Загрузка (пользователь выбрал изображение и загружает его на сервер через uploader)
-      if ((this.preview && !this.remove) || (this.hasFiles && !this.isUploading)) return 'filled'; // Заполненный (выбран и загружен файл, либо изначально присутствует preview)
-      return 'error';
+      if (this.isUploading) return 'loading'; // Загрузка (пользователь выбрал изображение и загружает его на сервер через uploader)
+      if (!this.chosenImage) return 'empty'; //Пустой (preview отсутствует, изображение не выбрано).
+      else return 'filled'; // Заполненный (выбран и загружен файл, либо изначально присутствует preview)
     },
     text() {
       switch (this.status) {
@@ -61,19 +58,17 @@ export default {
         case 'filled':
           return 'Удалить изображение';
         default:
-          return 'Ошибка';
+          return 'Удалить изображение';
       }
     },
     labelStyle() {
       if (this.chosenImage) return `--bg-url: url('${this.chosenImage}')`;
-      else if (this.preview && !this.remove) return `--bg-url: url('${this.preview}')`;
       return null;
     },
   },
 
   methods: {
     async updateImage(event) {
-      this.hasFiles = !!this.$refs.input.files.length;
       this.$emit('select', this.$refs.input.files[0]);
       if (this.uploader) {
         try {
@@ -84,18 +79,18 @@ export default {
         } catch (e) {
           this.$emit('error', e);
           this.$refs.input.value = null;
-          this.hasFiles = false;
         }
         this.isUploading = false;
+        return;
       }
+
+      this.chosenImage = URL.createObjectURL(this.$refs.input.files[0]);
     },
     deletePreview(event) {
       if (this.status === 'filled') {
         event.preventDefault();
         this.chosenImage = null;
         this.$refs.input.value = null;
-        this.hasFiles = false;
-        this.remove = true;
         this.$emit('remove');
       }
     },
