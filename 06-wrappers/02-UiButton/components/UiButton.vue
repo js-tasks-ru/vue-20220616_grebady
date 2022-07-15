@@ -21,8 +21,7 @@ export default {
       type: Boolean,
     },
     type: {
-      type: String,
-
+      type: [String, Object],
     },
   },
 
