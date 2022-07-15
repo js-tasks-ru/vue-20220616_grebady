@@ -90,15 +90,13 @@ export default {
       }
     },
     deletePreview(event) {
-      if (event.target.tagName === 'LABEL' || event.target.tagName === 'SPAN' ) {
-        if (this.status === 'filled') {
-          event.preventDefault();
-          this.chosenImage = null;
-          this.$refs.input.value = null;
-          this.hasFiles = false;
-          this.remove = true;
-          this.$emit('remove');
-        }
+      if (this.status === 'filled') {
+        event.preventDefault();
+        this.chosenImage = null;
+        this.$refs.input.value = null;
+        this.hasFiles = false;
+        this.remove = true;
+        this.$emit('remove');
       }
     },
   },
