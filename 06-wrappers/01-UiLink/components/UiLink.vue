@@ -9,9 +9,8 @@ export default {
   name: 'UiLink',
   props: {
     tag: {
-      type: String,
+      type: [String, Object],
       default: 'router-link',
-      validator: (value) => ['router-link', 'a'].includes(value),
     },
   },
 };
