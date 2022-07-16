@@ -31,10 +31,6 @@ export default {
     'update:modelValue': null,
   },
 
-  data() {
-    return {};
-  },
-
   computed: {
     date() {
       if (!this.modelValue) return;
@@ -42,7 +38,10 @@ export default {
     },
     time() {
       if (!this.modelValue) return;
-      return new Date(this.modelValue).toISOString().slice(11, 16);
+      const dateISOString = new Date(this.modelValue).toISOString();
+      return this.$attrs.step === undefined || this.$attrs.step % 60 === 0
+        ? dateISOString.slice(11, 16)
+        : dateISOString.slice(11, 19);
     },
     'datetime-local'() {
       if (!this.modelValue) return;
