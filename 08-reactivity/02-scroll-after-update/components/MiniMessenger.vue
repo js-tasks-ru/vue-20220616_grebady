@@ -1,6 +1,6 @@
 <template>
   <main class="mini-messenger">
-    <ul class="messages">
+    <ul ref="chat" class="messages">
       <li v-for="message in messages" :key="message.id" ref="items" class="message">
         {{ message.text }}
       </li>
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue';
+
 let lastId = 0;
 
 export default {
@@ -42,6 +44,7 @@ export default {
         text: this.newMessage,
       });
       this.newMessage = '';
+      nextTick(() => (this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight));
     },
   },
 };
