@@ -8,7 +8,19 @@ import debounce from 'lodash/debounce';
  * @returns {Ref<T>} - Новый ref, обновляющийся с debounce при обновлении исходного ref-а
  */
 export function debouncedRef(source, wait) {
-  const debounced = ref(undefined); // ...
-  // ...
+  const debounced = ref(undefined);
+  debounced.value = source.value;
+
+  let curSource = ref(source);
+  let timerId;
+
+  watch(source, (value, oldValue) => {
+    if (timerId) clearTimeout(timerId);
+
+    timerId = setTimeout(() => {
+      debounced.value = curSource.value;
+    }, wait);
+  });
+
   return debounced;
 }
