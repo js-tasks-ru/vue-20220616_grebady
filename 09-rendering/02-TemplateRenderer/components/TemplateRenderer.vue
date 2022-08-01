@@ -22,7 +22,6 @@ export default {
   },
   render() {
     const tempComponent = defineComponent({
-      name,
       components: this.components,
       props: {
         bindings: {
