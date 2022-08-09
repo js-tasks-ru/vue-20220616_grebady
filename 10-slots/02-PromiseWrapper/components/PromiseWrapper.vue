@@ -1,7 +1,5 @@
 <template>
-  <slot v-if="!isResolved" name="pending"></slot>
-  <slot v-if="isFulfilled" :result="result" name="fulfilled"></slot>
-  <slot v-if="isRejected" :error="error" name="rejected"></slot>
+  <slot :result="result" :error="error" :name="slotName"></slot>
 </template>
 
 <script>
@@ -17,11 +15,9 @@ export default {
 
   data() {
     return {
-      isResolved: false,
-      isFulfilled: false,
-      isRejected: false,
       result: null,
       error: null,
+      slotName: 'pending',
     };
   },
 
@@ -29,22 +25,18 @@ export default {
     promise: {
       immediate: true,
       handler(newPromise, oldPromise) {
-        this.isResolved = false;
-        this.isFulfilled = false;
-        this.isRejected = false;
         this.error = null;
         this.result = null;
+        this.slotName = 'pending';
         newPromise
           .then((result) => {
-            this.isResolved = true;
-            this.isFulfilled = true;
             this.result = result;
+            this.slotName = 'fulfilled';
             return result;
           })
           .catch((error) => {
-            this.isResolved = true;
-            this.isRejected = true;
             this.error = error;
+            this.slotName = 'rejected';
           });
       },
     },
