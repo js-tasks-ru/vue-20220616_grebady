@@ -20,19 +20,27 @@ export default {
       default: () => [],
     },
   },
-  render() {
-    const tempComponent = defineComponent({
-      components: this.components,
-      props: {
-        bindings: {
-          type: Object,
-          default: () => ({}),
+
+  computed: {
+    renderFunc() {
+      return compile(this.template);
+    },
+    generatedComponent() {
+      return defineComponent({
+        components: this.components,
+        props: {
+          bindings: {
+            type: Object,
+            default: () => ({}),
+          },
         },
-      },
-      render: compile(this.template),
-    });
-    const bindings = this.bindings;
-    return h(tempComponent, { bindings }, null);
+        render: this.renderFunc,
+      });
+    },
+  },
+
+  render() {
+    return h(this.generatedComponent, { bindings: this.bindings }, null);
   },
 };
 </script>
