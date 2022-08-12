@@ -39,7 +39,7 @@ const app = createApp({
   },
   computed: {
     markedEmails() {
-      return emails.map((email) => (email.includes(this.filter) ? { email, isMarked: true } : { email, isMarked: false }));
+      return emails.map((email) => ({ email, isMarked: email.includes(this.filter) }));
     },
   },
 }).mount('#app');
