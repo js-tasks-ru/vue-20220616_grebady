@@ -35,10 +35,11 @@
         </div>
 
         <div class="col" style="display: flex; flex-direction: column; font-family: emoji">
-          <label><input v-model="operator" type="radio" name="operator" value="sum" /> ➕</label>
-          <label><input v-model="operator" type="radio" name="operator" value="subtract" /> ➖</label>
-          <label><input v-model="operator" type="radio" name="operator" value="multiply" /> ✖</label>
-          <label><input v-model="operator" type="radio" name="operator" value="divide" /> ➗</label>
+          <template v-for="objOperator in operators">
+            <label>
+              <input v-model="operator" type="radio" name="operator" :value="objOperator.name" /> {{ objOperator.value }}
+            </label>
+          </template>
         </div>
 
         <div class="col">

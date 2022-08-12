@@ -7,6 +7,12 @@ const app = createApp({
       arg1: 0,
       arg2: 0,
       operator: 'sum',
+      operators: [
+        { name: 'sum', value: '➕' },
+        { name: 'subtract', value: '➖' },
+        { name: 'multiply', value: '✖' },
+        { name: 'divide', value: '➗' },
+      ],
     };
   },
   computed: {
