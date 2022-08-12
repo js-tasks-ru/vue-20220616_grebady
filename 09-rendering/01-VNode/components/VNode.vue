@@ -13,7 +13,7 @@ export default {
   },
 
   render() {
-    return Array.isArray(this.vnode) ? this.vnode.map((vnode) => h(vnode)) : h(this.vnode);
+    return this.vnode;
   },
 };
 </script>
