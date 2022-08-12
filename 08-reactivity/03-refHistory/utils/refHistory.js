@@ -6,8 +6,7 @@ import { ref, watch } from 'vue';
  * @returns {Object<{ history: Ref<T[]> }>} - История изменения source
  */
 export function refHistory(source) {
-  const history = ref();
-  history.value = [source.value];
+  const history = ref([source.value]);
   watch(source, (value) => history.value.push(value), { flush: 'sync' });
   return { history };
 }
