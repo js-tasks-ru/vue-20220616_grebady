@@ -1,5 +1,12 @@
 import { createApp } from './vendor/vue.esm-browser.js';
 
+const calculatorOperators = {
+  sum: (a, b) => a + b,
+  subtract: (a, b) => a - b,
+  multiply: (a, b) => a * b,
+  divide: (a, b) => (b === 0 ? 'На ноль делить не будем' : a / b),
+};
+
 // Создайте Vue приложение
 const app = createApp({
   data() {
@@ -17,17 +24,7 @@ const app = createApp({
   },
   computed: {
     result() {
-      switch (this.operator) {
-        case 'subtract':
-          return this.arg1 - this.arg2;
-        case 'multiply':
-          return this.arg1 * this.arg2;
-        case 'divide':
-          if (this.arg2 === 0) return 'На ноль делить не будем';
-          return this.arg1 / this.arg2;
-        default:
-          return this.arg1 + this.arg2;
-      }
+      return calculatorOperators[this.operator]?.(this.a, this.b);
     },
   },
 }).mount('#app');
