@@ -12,7 +12,7 @@ export default defineComponent({
   },
   computed: {
     title() {
-      return this.agendaItem.title ? this.agendaItem.title : agendaItemDefaultTitles[this.agendaItem.type];
+      return this.agendaItem.title ?? agendaItemDefaultTitles[this.agendaItem.type];
     },
     srcIcon() {
       return `/assets/icons/icon-${agendaItemIcons[this.agendaItem.type]}.svg`;
