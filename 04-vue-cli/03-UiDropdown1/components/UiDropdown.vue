@@ -19,14 +19,14 @@
         role="option"
         type="button"
         :value="option.value"
-        @click="checkNewValue($event)"
+        @click="select($event)"
       >
         <ui-icon v-if="option.icon" :icon="option.icon" class="dropdown__icon" />
         {{ option.text }}
       </button>
     </div>
-    <select hidden :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
-      <option v-for="option in options" :value="option.value">{{ option.text }}</option>
+    <select v-model="selectModel" hidden>
+      <option v-for="option in options" :key="option.value" :value="option.value">{{ option.text }}</option>
     </select>
   </div>
 </template>
@@ -72,10 +72,19 @@ export default {
     modelText() {
       return this.options.find((item) => item.value === this.modelValue)?.text;
     },
+    selectModel: {
+      get() {
+        return this.modelValue;
+      },
+
+      set(value) {
+        this.$emit('update:modelValue', value);
+      },
+    },
   },
 
   methods: {
-    checkNewValue(event) {
+    select(event) {
       this.isOpened = false;
       this.$emit('update:modelValue', event.target.value);
     },
