@@ -38,7 +38,7 @@ const app = createApp({
     };
   },
   computed: {
-    markedEmails() {
+    markedEmailsObj() {
       return emails.map((email) => ({ email, isMarked: email.includes(this.filter) }));
     },
   },
