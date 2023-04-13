@@ -15,7 +15,12 @@ export default defineComponent({
   emits: ['update:count'],
 
   // Шаблон лучше держать максимально простым, а логику выносить в методы
+  methods: {
+    increment() {
+      this.$emit('update:count', this.count + 1);
+    },
+  },
 
   // Шаблон потребуется отредактировать
-  template: `<button @click="$emit('update:count', count + 1)" type="button">{{ count }}</button>`,
+  template: `<button @click="increment" type="button">{{ count }}</button>`,
 });
