@@ -24,7 +24,7 @@ const app = createApp({
   },
   computed: {
     result() {
-      return calculatorOperators[this.operator]?.(this.a, this.b);
+      return calculatorOperators[this.operator]?.(this.arg1, this.arg2);
     },
   },
 }).mount('#app');
