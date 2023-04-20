@@ -1,6 +1,8 @@
 <template>
-  <div class="toast" :class="`toast_${type}`">
-    <UiIcon class="toast__icon" :icon="icon" />
+  <div class="toast" :class="markup.class">
+    <button @click="deleteToast" class="toast__delete">
+      <UiIcon class="toast__icon" :icon="markup.icon" />
+    </button>
     <span>{{ message }}</span>
   </div>
 </template>
@@ -16,19 +18,47 @@ export default {
   },
 
   props: {
+    id: {
+      type: String,
+      required: true,
+    },
     type: {
       type: String,
       required: true,
-      validator: (value) => ['success', 'error'].includes(value),
-    },
-    icon: {
-      type: String,
-      required: true,
-      validator: (value) => ['check-circle', 'alert-circle'].includes(value),
+      validator: (value) => ['success', 'error', 'info'].includes(value),
     },
     message: {
       type: String,
       required: true,
+    },
+  },
+
+  computed: {
+    markup() {
+      // Будем хранить классы и иконки для каждого типа тоста
+      // Легко добавить новый тип тоста при необходимости
+      const toastsTypes = {
+        success: {
+          icon: 'check-circle',
+          class: 'toast_success',
+        },
+        error: {
+          icon: 'alert-circle',
+          class: 'toast_error',
+        },
+        info: {
+          icon: 'pen-tool',
+          class: 'toast_info',
+        }
+      };
+
+      return toastsTypes[this.type];
+    },
+  },
+
+  methods: {
+    deleteToast() {
+      this.$emit('delete-toast', this.id);
     },
   },
 };
@@ -57,11 +87,21 @@ export default {
   margin-right: 12px;
 }
 
+.toast__delete {
+  border: none;
+  background: white;
+  cursor: pointer;
+}
+
 .toast.toast_success {
   color: var(--green);
 }
 
 .toast.toast_error {
   color: var(--red);
+}
+
+.toast.toast_info {
+  color: var(--yellow);
 }
 </style>
