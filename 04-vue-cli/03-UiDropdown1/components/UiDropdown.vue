@@ -33,8 +33,6 @@
 
 <script>
 import UiIcon from './UiIcon';
-import { v4 as uuidv4 } from 'uuid';
-
 export default {
   name: 'UiDropdown',
 
@@ -64,14 +62,22 @@ export default {
 
   computed: {
     isIconClass() {
+      // Проверяем, есть ли хотя бы один элемент с иконкой
       return !!this.options.find((item) => item.icon);
     },
+
+    selected() {
+      return this.options.find((option) => option.value === this.modelValue);
+    },
+
     modelIcon() {
-      return this.options.find((item) => item.value === this.modelValue)?.icon;
+      return this.selected?.icon;
     },
+
     modelText() {
-      return this.options.find((item) => item.value === this.modelValue)?.text;
+      return this.selected?.text;
     },
+
     selectModel: {
       get() {
         return this.modelValue;
@@ -83,14 +89,24 @@ export default {
     },
   },
 
+  mounted() {
+    document.addEventListener('click', this.handleDocumentClick);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick);
+  },
+
   methods: {
     select(event) {
       this.isOpened = false;
       this.$emit('update:modelValue', event.target.value);
     },
 
-    createKey() {
-      return uuidv4();
+    handleDocumentClick(event) {
+      if (!this.$el.contains(event.target)) {
+        this.isOpened = false;
+      }
     },
   },
 };
