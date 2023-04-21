@@ -15,7 +15,7 @@
 import UiToast from './UiToast.vue';
 import { v4 as uuidv4 } from 'uuid';
 
-const DEFAULT_DELAY = 1000000;
+const DEFAULT_DELAY = 5000;
 
 export default {
   name: 'TheToaster',
