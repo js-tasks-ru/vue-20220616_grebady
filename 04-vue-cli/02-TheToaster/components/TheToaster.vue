@@ -3,9 +3,10 @@
     <UiToast
       v-for="toast in toasts"
       :key="toast.key"
-      :icon="toast.icon"
+      :id="toast.key"
       :message="toast.message"
       :type="toast.type"
+      @delete-toast="deleteToast"
     />
   </div>
 </template>
@@ -14,6 +15,8 @@
 import UiToast from './UiToast.vue';
 import { v4 as uuidv4 } from 'uuid';
 
+const DEFAULT_DELAY = 5000;
+
 export default {
   name: 'TheToaster',
 
@@ -21,27 +24,56 @@ export default {
 
   data() {
     return {
-      toasts: [],
+      toasts: new Set(),
     };
   },
+
+  // Если вдруг компонент будет уничтожен при наличии тостов, в памяти останутся висеть таймеры для их удаления.
+  // Чистим перед уничтожением компонента
+  beforeUnmount() {
+    for (const toast of this.toasts) {
+      clearTimeout(toast.timeoutId);
+    }
+  },
+
   methods: {
     error(message) {
-      this.toasts.push({
-        key: uuidv4(),
+      this.addToast({
         type: 'error',
-        icon: 'alert-circle',
         message,
       });
-      setTimeout(() => this.toasts.shift(), 5000);
     },
     success(message) {
-      this.toasts.push({
-        key: uuidv4(),
+      this.addToast({
         type: 'success',
-        icon: 'check-circle',
         message,
       });
-      setTimeout(() => this.toasts.shift(), 5000);
+    },
+
+    info(message) {
+      this.addToast({
+        type: 'info',
+        message,
+      });
+    },
+
+    addToast({ type, message, delay = DEFAULT_DELAY }) {
+      const key = uuidv4();
+
+      const toast = { key, type, message, delay };
+
+      toast.timeoutId = setTimeout(() => {
+        this.toasts.delete(toast);
+      }, delay);
+      this.toasts.add(toast);
+    },
+
+    deleteToast(id) {
+      // get toast by id from set
+      const toast = [...this.toasts].find((toast) => toast.key === id);
+      // clear timeout and delete toast
+      clearTimeout(toast.timeoutId);
+      this.toasts.delete(toast);
     },
   },
 };

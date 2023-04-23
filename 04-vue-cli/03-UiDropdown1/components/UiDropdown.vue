@@ -19,22 +19,20 @@
         role="option"
         type="button"
         :value="option.value"
-        @click="checkNewValue($event)"
+        @click="select($event)"
       >
         <ui-icon v-if="option.icon" :icon="option.icon" class="dropdown__icon" />
         {{ option.text }}
       </button>
     </div>
-    <select hidden :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
-      <option v-for="option in options" :value="option.value">{{ option.text }}</option>
+    <select v-model="selectModel" hidden>
+      <option v-for="option in options" :key="option.value" :value="option.value">{{ option.text }}</option>
     </select>
   </div>
 </template>
 
 <script>
 import UiIcon from './UiIcon';
-import { v4 as uuidv4 } from 'uuid';
-
 export default {
   name: 'UiDropdown',
 
@@ -64,24 +62,51 @@ export default {
 
   computed: {
     isIconClass() {
+      // Проверяем, есть ли хотя бы один элемент с иконкой
       return !!this.options.find((item) => item.icon);
     },
-    modelIcon() {
-      return this.options.find((item) => item.value === this.modelValue)?.icon;
+
+    selected() {
+      return this.options.find((option) => option.value === this.modelValue);
     },
+
+    modelIcon() {
+      return this.selected?.icon;
+    },
+
     modelText() {
-      return this.options.find((item) => item.value === this.modelValue)?.text;
+      return this.selected?.text;
+    },
+
+    selectModel: {
+      get() {
+        return this.modelValue;
+      },
+
+      set(value) {
+        this.$emit('update:modelValue', value);
+      },
     },
   },
 
+  mounted() {
+    document.addEventListener('click', this.handleDocumentClick);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick);
+  },
+
   methods: {
-    checkNewValue(event) {
+    select(event) {
       this.isOpened = false;
       this.$emit('update:modelValue', event.target.value);
     },
 
-    createKey() {
-      return uuidv4();
+    handleDocumentClick(event) {
+      if (!this.$el.contains(event.target)) {
+        this.isOpened = false;
+      }
     },
   },
 };

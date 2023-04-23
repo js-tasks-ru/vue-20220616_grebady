@@ -24,8 +24,9 @@ const app = createApp({
   },
 
   watch: {
-    meetupId(newId, oldId) {
-      fetchMeetupById(newId).then((meetup) => this.meetup =  meetup);
+    meetupId(newId) {
+      this.meetup = null;
+      fetchMeetupById(newId).then((meetup) => (this.meetup = meetup));
     },
   },
 }).mount('#app');
